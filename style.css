@@ -62,17 +62,35 @@ body{
 }
 
 .detalhe{
-  margin:8px 0;
-  font-size:16px;
+  margin:12px 0;
+  font-size:15px;
   display:flex;
   justify-content:center;
   align-items:center;
-  gap:8px;
+  gap:10px;
   animation:slideInUp 0.6s ease-out;
+  letter-spacing:0.3px;
+  backdrop-filter:blur(2px);
+  padding:8px 12px;
+  border-radius:8px;
+  background:rgba(0,0,0,0.15);
+  transition:all 0.3s ease;
+}
+
+.detalhe:hover{
+  background:rgba(0,0,0,0.25);
+  transform:scale(1.05);
 }
 
 .detalhe i{
   font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:20px;
+  height:20px;
+  line-height:20px;
+  vertical-align:middle;
 }
 
 
