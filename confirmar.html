@@ -1,46 +1,153 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirmar Presença | Sarau de Mim</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="pagina-form">
-  <section class="card-form">
-    <header class="topo-form">
-      <h1>Confirmar presença</h1>
-      <p>Preencha seus dados para confirmar no Sarau de Mim.</p>
-    </header>
 
-    <form class="form-confirmacao" method="post" action="#">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Confirmar Presença - Sarau de Mim</title>
+
+<link rel="stylesheet" href="style.css">
+
+<!-- melhoria tipográfica -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+  .sucesso {
+    display: none;
+    text-align: center;
+    padding: 30px 20px;
+    background: rgba(46, 125, 50, 0.1);
+    border-radius: 12px;
+    border: 2px solid #2e7d32;
+    margin-top: 20px;
+    animation: slideInUp 0.6s ease-out;
+  }
+
+  .sucesso.ativo {
+    display: block;
+  }
+
+  .sucesso h2 {
+    color: #2e7d32;
+    margin: 0 0 10px 0;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 28px;
+  }
+
+  .sucesso p {
+    color: #1b5e20;
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .sucesso i {
+    font-size: 48px;
+    color: #2e7d32;
+    margin-bottom: 10px;
+  }
+
+  .form-confirmacao button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+</style>
+
+</head>
+
+<body>
+
+<div class="pagina-form">
+
+  <div class="card-form">
+
+    <div class="topo-form">
+      <h1>Confirmação</h1>
+      <p>Por favor, preencha seus dados abaixo</p>
+    </div>
+
+    <form class="form-confirmacao" id="formulario" method="POST" action="https://formspree.io/f/SEU_FORM_ID">
+
       <div>
-        <label for="nome">Seu nome</label>
-        <input id="nome" name="nome" type="text" placeholder="Digite seu nome" required>
+        <label for="nome">Nome completo</label>
+        <input type="text" id="nome" name="nome" required>
+      </div>
+
+      <div>
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required>
       </div>
 
       <div>
         <label for="telefone">Telefone</label>
-        <input id="telefone" name="telefone" type="tel" placeholder="(00) 00000-0000" required>
+        <input type="tel" id="telefone" name="telefone" required>
       </div>
 
       <div>
-        <label for="acompanhantes">Acompanhantes</label>
-        <input id="acompanhantes" name="acompanhantes" type="number" min="0" placeholder="0">
+        <label for="mensagem">Mensagem (opcional)</label>
+        <textarea id="mensagem" name="mensagem" rows="4"></textarea>
       </div>
 
-      <div>
-        <label for="obs">Observações (opcional)</label>
-        <textarea id="obs" name="obs" rows="3" placeholder="Alguma informação importante?"></textarea>
-      </div>
+      <button type="submit" id="btnSubmit">Confirmar Presença</button>
 
-      <button type="submit">Confirmar</button>
     </form>
 
-    <a href="index.html" class="voltar">← Voltar para o convite</a>
-  </section>
+    <div class="sucesso" id="sucessoMsg">
+      <i class="bi bi-check-circle"></i>
+      <h2>Presença Confirmada! 🎉</h2>
+      <p>Obrigado por confirmar! Nos vemos no evento.</p>
+    </div>
+
+    <a href="index.html" class="voltar">← Voltar</a>
+
+  </div>
+
+</div>
+
+<script>
+  const formulario = document.getElementById('formulario');
+  const sucessoMsg = document.getElementById('sucessoMsg');
+  const btnSubmit = document.getElementById('btnSubmit');
+
+  formulario.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Desabilita o botão enquanto envia
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Enviando...';
+
+    // Envia pra Formspree
+    fetch(formulario.action, {
+      method: 'POST',
+      body: new FormData(formulario),
+      headers: {
+        'Accept': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        // Esconde o formulário e mostra mensagem de sucesso
+        formulario.style.display = 'none';
+        sucessoMsg.classList.add('ativo');
+
+        // Redireciona pro home depois de 3 segundos
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 3000);
+      }
+    }).catch(error => {
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = 'Confirmar Presença';
+      alert('Erro ao enviar. Tente novamente!');
+    });
+  });
+</script>
+
 </body>
+
 </html>
