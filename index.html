@@ -45,8 +45,6 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.c
 Horário: 19h
 </div>
 
-
-
 </div>
 
 
@@ -60,34 +58,34 @@ DO CÉU AO CORAÇÃO: SARAU DE MIM
 
 <div class="barra">
 
-<span>0:00</span>
+<span id="tempoAtual">0:00</span>
 
-<input type="range" value="0">
+<input type="range" id="progressBar" value="0" min="0" max="100">
 
-<span>4:05</span>
+<span id="duracao">0:40</span>
 
 </div>
 
 
 <div class="controles">
 
-<button>
+<button id="btnShuffle">
 <i class="bi bi-shuffle"></i>
 </button>
 
-<button>
+<button id="btnAnterior">
 <i class="bi bi-skip-backward-fill"></i>
 </button>
 
-<button class="play">
+<button class="play" id="btnPlay">
 <i class="bi bi-play-fill"></i>
 </button>
 
-<button>
+<button id="btnProximo">
 <i class="bi bi-skip-forward-fill"></i>
 </button>
 
-<button>
+<button id="btnRepeat">
 <i class="bi bi-repeat"></i>
 </button>
 
@@ -100,6 +98,115 @@ Confirmar presença
 </div>
 
 </div>
+
+<!-- ELEMENTO DE ÁUDIO (ESCONDIDO) -->
+<audio id="player" preload="metadata">
+  <source src="regresso.mp3" type="audio/mpeg">
+  Seu navegador não suporta o elemento de áudio.
+</audio>
+
+<script>
+  const audio = document.getElementById('player');
+  const btnPlay = document.getElementById('btnPlay');
+  const progressBar = document.getElementById('progressBar');
+  const tempoAtual = document.getElementById('tempoAtual');
+  const duracao = document.getElementById('duracao');
+  const btnAnterior = document.getElementById('btnAnterior');
+  const btnProximo = document.getElementById('btnProximo');
+  const btnRepeat = document.getElementById('btnRepeat');
+  const btnShuffle = document.getElementById('btnShuffle');
+
+  // Tempo de início e fim (em segundos)
+  const TEMPO_INICIO = 50;  // 0:50
+  const TEMPO_FIM = 90;     // 1:30
+
+  // Formatar tempo em MM:SS
+  function formatarTempo(segundos) {
+    const mins = Math.floor(segundos / 60);
+    const segs = Math.floor(segundos % 60);
+    return `${mins}:${segs < 10 ? '0' : ''}${segs}`;
+  }
+
+  // Iniciar áudio no tempo correto
+  audio.currentTime = TEMPO_INICIO;
+
+  // Atualizar barra de progresso
+  audio.addEventListener('timeupdate', () => {
+    if (audio.currentTime > TEMPO_FIM) {
+      audio.currentTime = TEMPO_INICIO;
+      audio.pause();
+      btnPlay.innerHTML = '<i class="bi bi-play-fill"></i>';
+    }
+
+    const tempoDecorrido = audio.currentTime - TEMPO_INICIO;
+    const duracao_total = TEMPO_FIM - TEMPO_INICIO;
+    const percentual = (tempoDecorrido / duracao_total) * 100;
+
+    progressBar.value = percentual;
+    tempoAtual.textContent = formatarTempo(tempoDecorrido);
+  });
+
+  // Play/Pause
+  btnPlay.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      btnPlay.innerHTML = '<i class="bi bi-pause-fill"></i>';
+    } else {
+      audio.pause();
+      btnPlay.innerHTML = '<i class="bi bi-play-fill"></i>';
+    }
+  });
+
+  // Controlar barra de progresso
+  progressBar.addEventListener('input', (e) => {
+    const duracao_total = TEMPO_FIM - TEMPO_INICIO;
+    const novoTempo = TEMPO_INICIO + (e.target.value / 100) * duracao_total;
+    audio.currentTime = novoTempo;
+  });
+
+  // Botão anterior (reinicia a música)
+  btnAnterior.addEventListener('click', () => {
+    audio.currentTime = TEMPO_INICIO;
+    if (!audio.paused) {
+      audio.play();
+    }
+  });
+
+  // Botão próximo (pula pro fim)
+  btnProximo.addEventListener('click', () => {
+    audio.currentTime = TEMPO_FIM - 1;
+  });
+
+  // Shuffle (alterna entre volume baixo e normal)
+  let shuffleAtivo = false;
+  btnShuffle.addEventListener('click', () => {
+    shuffleAtivo = !shuffleAtivo;
+    btnShuffle.style.opacity = shuffleAtivo ? '1' : '0.6';
+    audio.volume = shuffleAtivo ? 0.5 : 1;
+  });
+
+  // Repeat (loop)
+  let repeatAtivo = false;
+  btnRepeat.addEventListener('click', () => {
+    repeatAtivo = !repeatAtivo;
+    btnRepeat.style.opacity = repeatAtivo ? '1' : '0.6';
+  });
+
+  // Quando termina, se repeat tá ativo, reinicia
+  audio.addEventListener('ended', () => {
+    if (repeatAtivo) {
+      audio.currentTime = TEMPO_INICIO;
+      audio.play();
+    } else {
+      btnPlay.innerHTML = '<i class="bi bi-play-fill"></i>';
+    }
+  });
+
+  // Carregar duração
+  audio.addEventListener('loadedmetadata', () => {
+    duracao.textContent = formatarTempo(TEMPO_FIM - TEMPO_INICIO);
+  });
+</script>
 
 </body>
 </html>
